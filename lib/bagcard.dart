@@ -8,6 +8,8 @@ class BagCard extends StatelessWidget {
   final double? distance;
   final double? oldPrice;
   final double? discountedPrice;
+  final bool isFavorite;
+  final VoidCallback onFavoritePressed;
 
   const BagCard({
     Key? key,
@@ -18,6 +20,8 @@ class BagCard extends StatelessWidget {
     required this.distance,
     required this.oldPrice,
     required this.discountedPrice,
+    required this.isFavorite,
+    required this.onFavoritePressed,
   }) : super(key: key);
 
   @override
@@ -47,6 +51,17 @@ class BagCard extends StatelessWidget {
                               'assets/images/default_placeholder.jpg'),
                           fit: BoxFit.cover,
                         ),
+                ),
+              ),
+              Positioned(
+                top: 8,
+                right: 8,
+                child: IconButton(
+                  icon: Icon(
+                    isFavorite ? Icons.favorite : Icons.favorite_border,
+                    color: isFavorite ? Colors.red : Colors.grey,
+                  ),
+                  onPressed: onFavoritePressed,
                 ),
               ),
               Positioned(

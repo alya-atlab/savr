@@ -20,7 +20,7 @@ Future<bool> signup(String name, String email, String password) async {
       final Map<String, dynamic> responseData = json.decode(response.body);
 
       if (responseData['success'] == true) {
-        // Save the user ID to local storage
+        
         final SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setInt('user_id', responseData['user_id']); // Save user ID
         print('Signup successful. User ID: ${responseData['user_id']}');

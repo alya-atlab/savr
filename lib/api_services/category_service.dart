@@ -13,7 +13,7 @@ class CategoryService {
         print("Categories Response: $data"); // Debug print
 
         if (data['success']) {
-          // Verify the structure of the categories
+         
           if (data['categories'] is List) {
             return List<Map<String, dynamic>>.from(data['categories']);
           } else {

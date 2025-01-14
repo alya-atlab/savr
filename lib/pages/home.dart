@@ -24,11 +24,9 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> _fetchData() async {
     try {
-      // final orderData = await OrderService.fetchCurrentOrder(widget.userId);
       final categoryData = await CategoryService.fetchCategories();
 
       setState(() {
-        // currentOrder = orderData.isNotEmpty ? orderData[0] : null;
         categories = categoryData;
         isLoading = false;
       });

@@ -14,9 +14,9 @@ Future<Map<String, dynamic>> login(String email, String password) async {
     );
 
     if (response.statusCode == 200) {
-      // Parse the JSON response
+     
       final Map<String, dynamic> responseData = json.decode(response.body);
-      return responseData; // Return the entire response
+      return responseData; 
     } else {
       return {'success': false, 'message': 'Failed to connect to the server'};
     }

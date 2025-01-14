@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import '../api_services/bag_service.dart';
+import '../api_services/favorite_service.dart';
 import '../bagcard.dart';
 import '../bag_details.dart';
 
@@ -18,11 +19,13 @@ class _DiscoverState extends State<Discover> {
   double? latitude;
   double? longitude;
   List<Map<String, dynamic>> bags = [];
+  Set<String> favoriteBagIds = {};
 
   @override
   void initState() {
     super.initState();
     fetchLocationAndBags();
+    loadFavorites();
   }
 
   Future<void> fetchLocationAndBags() async {
@@ -31,10 +34,8 @@ class _DiscoverState extends State<Discover> {
       latitude = position.latitude;
       longitude = position.longitude;
 
-      // Fetch all bags
       bags = await BagService.fetchBags(latitude!, longitude!);
 
-      // Fetch available quantity for each bag and filter out unavailable ones
       List<Map<String, dynamic>> filteredBags = [];
       for (var bag in bags) {
         final int availableQuantity = await BagService.fetchAvailableQuantity(
@@ -47,7 +48,7 @@ class _DiscoverState extends State<Discover> {
       }
 
       setState(() {
-        bags = filteredBags; // Only bags with available quantity > 0
+        bags = filteredBags;
         isLoading = false;
       });
     } catch (e) {
@@ -58,6 +59,20 @@ class _DiscoverState extends State<Discover> {
         SnackBar(content: Text("Error: $e")),
       );
     }
+  }
+
+  Future<void> loadFavorites() async {
+    List<Map<String, dynamic>> favorites =
+        await FavoriteService.loadFavorites();
+    setState(() {
+      favoriteBagIds =
+          favorites.map((favorite) => favorite['bag_id'].toString()).toSet();
+    });
+  }
+
+  Future<void> toggleFavorite(Map<String, dynamic> bag) async {
+    await FavoriteService.toggleFavorite(bag);
+    loadFavorites();
   }
 
   Future<Position> _determinePosition() async {
@@ -100,13 +115,13 @@ class _DiscoverState extends State<Discover> {
                     crossAxisCount: 2,
                     crossAxisSpacing: 10,
                     mainAxisSpacing: 10,
-                    childAspectRatio: 0.75, // Adjust this as needed
+                    childAspectRatio: 0.75,
                   ),
                   itemCount: bags.length,
                   itemBuilder: (context, index) {
                     final bag = bags[index];
+                    final bagId = bag['bag_id'].toString();
 
-                    // Parse the bag rating as a double
                     final double rating = bag['bag_rating'] != null
                         ? double.tryParse(bag['bag_rating'].toString()) ?? 0.0
                         : 0.0;
@@ -140,6 +155,8 @@ class _DiscoverState extends State<Discover> {
                         distance: bag['distance'],
                         oldPrice: bag['total_price'],
                         discountedPrice: bag['discounted_price'],
+                        isFavorite: favoriteBagIds.contains(bagId),
+                        onFavoritePressed: () => toggleFavorite(bag),
                       ),
                     );
                   },

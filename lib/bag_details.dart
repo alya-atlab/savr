@@ -11,7 +11,7 @@ class BagDetails extends StatelessWidget {
   final double? oldPrice;
   final double? discountedPrice;
   final double rating;
-  final int userId; // Add userId here
+  final int userId;
 
   const BagDetails({
     Key? key,
